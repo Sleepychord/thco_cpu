@@ -20,10 +20,10 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use work.HEADER.ALL;
+USE IEEE.STD_LOGIC_UNSIGNED.ALL;
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
-
+use IEEE.NUMERIC_STD.ALL;
 -- Uncomment the following library declaration if instantiating
 -- any Xilinx primitives in this code.
 --library UNISIM;
@@ -48,8 +48,19 @@ architecture Behavioral of if_id is
 signal pc : INT16 := ZERO;	-- pc in if	
 begin
 	process(clk, rst)
-	-- assign id_pc and calc new PC, considering is_stop and jump_target
+	-- assign id_pc and calc new PC, considering is_paused and jump_target
 	begin
+		if(rst = '0')then
+			pc <= ZERO;
+			id_pc <= ZERO;
+		elsif(clk'event and clk = '1' and is_paused = '0')then
+			id_pc <= pc;
+			if(jump_target(15) = '1')then	--	negative number represents none
+				pc <= pc + "0000000000000001";
+			else 
+				pc <= jump_target;
+			end if;
+		end if;
 	end process;
 	
 	-- combinational logic of if

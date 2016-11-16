@@ -65,5 +65,6 @@ begin
 	-- the situation that visiting two different addr in the same ram might happen,
 	-- maybe we can handle by using super clock to slice the time for this situation
 
+	-- don't use both positive and negative edge!
 end Behavioral;
 

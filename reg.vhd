@@ -23,7 +23,7 @@ use work.HEADER.ALL;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
+use IEEE.NUMERIC_STD.ALL;
 
 -- Uncomment the following library declaration if instantiating
 -- any Xilinx primitives in this code.
@@ -43,10 +43,26 @@ entity reg is
 end reg;
 
 architecture Behavioral of reg is
-
+type matrix_type is array (31 downto 0) of INT16;
+signal regs : matrix_type;
 begin
 
 -- READ is combinal logic, don't forget to check whether read_addr == write_addr
 -- write is sequetial logic
+	read_data1 <= write_data when (write_en = '1')and(read_addr1 = write_addr) else
+			regs(to_integer(unsigned(read_addr1)));
+	read_data2 <= write_data when (write_en = '1')and(read_addr2 = write_addr) else
+			regs(to_integer(unsigned(read_addr2)));
+			
+	process(clk, rst)
+	begin
+		if(rst = '0')then
+			for i in 31 downto 0 loop
+				regs(i) <= ZERO;
+			end loop;
+		elsif( clk'event and clk = '1' and write_en = '1')then
+			regs(to_integer(unsigned(write_addr))) <= write_data;
+		end if;
+	end process;
 end Behavioral;
 
