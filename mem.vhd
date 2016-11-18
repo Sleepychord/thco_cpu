@@ -39,7 +39,8 @@ entity mem is
 			  -- interact with sram
 			  sram_toggle : out STD_LOGIC_VECTOR(1 DOWNTO 0);
 			  sram_addr : out INT16;
-			  sram_data : inout INT16;
+			  sram_data_in : in INT16;
+			  sram_data_out : out INT16;
 			  -- pass to mem/wb and forward to id
 			  mem_data : out  INT16;
            mem_target_reg : out  STD_LOGIC_VECTOR(4 DOWNTO 0));
@@ -49,14 +50,12 @@ architecture Behavioral of mem is
 
 begin
 	mem_op <= op;
-	--mem_data <= data when (op = LI) else "0000000000000000";
-	mem_data <= sram_data when (op = LW)or(op = LW_SP) else data;
-	mem_target_reg <= target_reg;	--when (op = LI) else "00000";
+	mem_data <= sram_data_in when (op = LW)or(op = LW_SP) else data;
+	sram_data_out <= data;
+	sram_addr <= target_mem;
+	mem_target_reg <= target_reg;
 	with op select
 		sram_toggle <= "00" when LW | LW_SP,
 							"01" when SW | SW_SP,
 							"10" when others;
-	sram_addr <= target_mem when (op = SW) else "0000000000000000";
-	sram_data <= data when (op = SW) else "0000000000000000";
 end Behavioral;
-
