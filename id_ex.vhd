@@ -50,6 +50,25 @@ architecture Behavioral of id_ex is
 
 begin
 
-
+	process (clk, rst)
+	begin
+		if(rst = '0')then
+			ex_op <= NOP;
+			ex_num1 <= ZERO;
+			ex_num2 <= ZERO;
+			ex_num3 <= ZERO;
+			ex_target_reg <= "00000";
+		elsif(clk'event and clk='1')then
+			if(is_paused = '1')then
+				ex_op <= NOP;
+			else
+				ex_num1 <= id_num1;
+				ex_num2 <= id_num2;
+				ex_num3 <= id_num3;
+				ex_op <= id_op;
+				ex_target_reg <= id_target_reg;
+			end if;
+		end if;
+	end process;
 end Behavioral;
 
