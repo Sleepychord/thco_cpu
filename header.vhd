@@ -14,6 +14,9 @@ package header is
 
 		subtype int16 is STD_LOGIC_VECTOR(15 DOWNTO 0);
 		function sign_extend8(signal num_raw : in STD_LOGIC_VECTOR(7 DOWNTO 0)) return INT16;
+		function sign_extend11(signal num_raw : in STD_LOGIC_VECTOR(10 DOWNTO 0)) return INT16;
+		function sign_extend4(signal num_raw : in STD_LOGIC_VECTOR(3 DOWNTO 0)) return INT16;
+		function sign_extend5(signal num_raw : in STD_LOGIC_VECTOR(4 DOWNTO 0)) return INT16;
 		constant zero : int16 := "0000000000000000";
 		type operation is (ADDIU, ADDIU3, ADDSP3, ADDSP, ADDU, AND_OP, B, BEQZ, BNEZ, 
 			BTEQZ, CMP, JALR, JR, JRRA, LI, LW, LW_SP, MFIH, MFPC, MOVE, MTIH, MTSP, NEG, NOP,
@@ -34,12 +37,36 @@ package header is
 end header;
 
 package body header is
+		function sign_extend11(signal num_raw : in STD_LOGIC_VECTOR(10 DOWNTO 0)) return INT16 is
+		begin
+			if(num_raw(7) = '0')then
+				return "00000" & num_raw;
+			else
+				return "11111" & num_raw;
+			end if;
+		end function;
 		function sign_extend8(signal num_raw : in STD_LOGIC_VECTOR(7 DOWNTO 0)) return INT16 is
 		begin
 			if(num_raw(7) = '0')then
 				return "00000000" & num_raw;
 			else
 				return "11111111" & num_raw;
+			end if;
+		end function;
+		function sign_extend4(signal num_raw : in STD_LOGIC_VECTOR(3 DOWNTO 0)) return INT16 is
+		begin
+			if(num_raw(3) = '0')then
+				return "000000000000" & num_raw;
+			else
+				return "111111111111" & num_raw;
+			end if;
+		end function;
+		function sign_extend5(signal num_raw : in STD_LOGIC_VECTOR(4 DOWNTO 0)) return INT16 is
+		begin
+			if(num_raw(3) = '0')then
+				return "00000000000" & num_raw;
+			else
+				return "11111111111" & num_raw;
 			end if;
 		end function;
 		function get_op(signal op: in STD_LOGIC_VECTOR(4 DOWNTO 0); signal aux: in STD_LOGIC_VECTOR(7 DOWNTO 0)) return operation is

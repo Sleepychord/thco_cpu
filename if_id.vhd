@@ -39,7 +39,7 @@ entity if_id is
 			  addr : out INT16;
 			  instruction: in INT16;
 			  --jump_target is the target address of JUMP instruction,
-			  --	negative number represents none
+			  jump_en : in STD_LOGIC;
            jump_target : in  INT16);
 
 end if_id;
@@ -49,17 +49,19 @@ signal pc : INT16 := ZERO;	-- pc in if
 begin
 	process(clk, rst)
 	-- assign id_pc and calc new PC, considering is_paused and jump_target
+	variable new_pc : INT16;
 	begin
 		if(rst = '0')then
 			pc <= ZERO;
 			id_pc <= ZERO;
 		elsif(clk'event and clk = '1' and is_paused = '0')then
-			id_pc <= pc;
-			if(jump_target(15) = '1')then	--	negative number represents none
-				pc <= pc + "0000000000000001";
+			if(jump_en = '0')then	--	negative number represents none
+				new_pc := pc + "0000000000000001";
 			else 
-				pc <= jump_target;
+				new_pc := jump_target;
 			end if;
+			id_pc <= new_pc;
+			pc <= new_pc;
 		end if;
 	end process;
 	

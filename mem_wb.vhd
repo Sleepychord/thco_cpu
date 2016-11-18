@@ -34,7 +34,7 @@ entity mem_wb is
     Port ( op : in  operation;
            mem_data : in  INT16;
            mem_target_reg : in  STD_LOGIC_VECTOR(4 DOWNTO 0);
-			  rst : in  STD_LOGIC);
+			  rst : in  STD_LOGIC;
 			  clk : in  STD_LOGIC;
            wb_en : out  STD_LOGIC;
            wb_data : out  INT16;

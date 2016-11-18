@@ -31,9 +31,9 @@ use work.HEADER.ALL;
 --use UNISIM.VComponents.all;
 
 entity ex is
-    Port ( num1 : in  STD_LOGIC_VECTOR(2 DOWNTO 0);
-           num2 : in  STD_LOGIC_VECTOR(2 DOWNTO 0);
-           num3 : in  STD_LOGIC_VECTOR(2 DOWNTO 0);
+    Port ( num1 : in  INT16;
+           num2 : in  INT16;
+			  num3 : in  INT16;
            op : in  operation;
            target_reg : in  STD_LOGIC_VECTOR(4 DOWNTO 0);
 			  is_load : out STD_LOGIC;

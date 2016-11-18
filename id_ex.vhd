@@ -36,12 +36,12 @@ entity id_ex is
            rst : in  STD_LOGIC;
 			  is_paused : in STD_LOGIC;
            ex_op : out  operation;
-           id_num1 : out  STD_LOGIC_VECTOR(2 DOWNTO 0);
-           id_num2 : out  STD_LOGIC_VECTOR(2 DOWNTO 0);
-           id_num3 : out  STD_LOGIC_VECTOR(2 DOWNTO 0);
-           ex_num1 : out  STD_LOGIC_VECTOR(2 DOWNTO 0);
-           ex_num2 : out  STD_LOGIC_VECTOR(2 DOWNTO 0);
-           ex_num3 : out  STD_LOGIC_VECTOR(2 DOWNTO 0);
+           id_num1 : in  INT16;
+           id_num2 : in  INT16;
+           id_num3 : in  INT16;
+           ex_num1 : out  INT16;
+           ex_num2 : out  INT16;
+           ex_num3 : out  INT16;
            id_target_reg : in STD_LOGIC_VECTOR(4 DOWNTO 0);
            ex_target_reg : out STD_LOGIC_VECTOR(4 DOWNTO 0));
 end id_ex;
