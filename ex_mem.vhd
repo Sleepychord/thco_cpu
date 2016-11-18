@@ -44,9 +44,18 @@ entity ex_mem is
 end ex_mem;
 
 architecture Behavioral of ex_mem is
-
 begin
-
+	process (clk, rst)
+	begin
+		if (rst = '0') then
+			mem_op <= NOP;
+		elsif ( clk'event and clk = '1' ) then
+			mem_op <= ex_op;
+			mem_target_reg <= ex_target_reg;
+			mem_data <= ex_data;
+			mem_target_mem <= ex_target_mem;			
+		end if;
+	end process;
 	-- just link when positive edge comes
 end Behavioral;
 
