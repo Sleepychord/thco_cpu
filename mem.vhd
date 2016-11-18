@@ -36,10 +36,8 @@ entity mem is
            data : in  INT16;
            target_mem : in  INT16;
            target_reg : in  STD_LOGIC_VECTOR(4 DOWNTO 0);
-           op : in  STD_LOGIC_VECTOR(4 DOWNTO 0);
-           aux : in  STD_LOGIC_VECTOR(7 DOWNTO 0);
-           mem_op : out  STD_LOGIC_VECTOR(4 DOWNTO 0);
-           mem_aux : out  STD_LOGIC_VECTOR(7 DOWNTO 0);
+           op : in  operation;
+           mem_op : out  operation;
 			  -- interact with sram
 			  sram_addr : out INT16;
 			  sram_data : inout INT16;

@@ -37,13 +37,12 @@ entity id is
            read_data1 : in  INT16;
 			  read_addr2 : out  STD_LOGIC_VECTOR(4 DOWNTO 0);
            read_data2 : in  INT16;
-           op : out  STD_LOGIC_VECTOR(4 DOWNTO 0);
-           aux_op : out  STD_LOGIC_VECTOR(7 DOWNTO 0);
+           id_op: out operation;
            num1 : out  STD_LOGIC_VECTOR(2 DOWNTO 0);
            num2 : out  STD_LOGIC_VECTOR(2 DOWNTO 0);
            num3 : out  STD_LOGIC_VECTOR(2 DOWNTO 0);
 			  -- target_reg, if target is memory, store it in num1
-           target_reg : out STD_LOGIC_VECTOR(4 DOWNTO 0);
+           target_reg : inout STD_LOGIC_VECTOR(4 DOWNTO 0);
 			  -- foward sideway
 			  ex_target_reg : in STD_LOGIC_VECTOR(4 DOWNTO 0);
 			  ex_target_data : in INT16;
@@ -58,11 +57,13 @@ entity id is
 end id;
 
 architecture Behavioral of id is
-
+signal op : STD_LOGIC_VECTOR(4 DOWNTO 0);
+signal aux_op : STD_LOGIC_VECTOR(7 DOWNTO 0);
 begin
 	op <= id_instruction(15 downto 11);
-	aux_op <= 
-	pause_req <= is_ex_load and (ex_target_reg = target_reg);
+	aux_op <= id_instruction(15 downto 8) when (op = "01100") else id_instruction(7 downto 0);
+	id_op <= get_op(op, aux_op);
+	pause_req <= is_ex_load when(ex_target_reg = target_reg) else '0';
 	
 end Behavioral;
 

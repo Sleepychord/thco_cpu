@@ -34,10 +34,10 @@ entity ex is
     Port ( num1 : in  STD_LOGIC_VECTOR(2 DOWNTO 0);
            num2 : in  STD_LOGIC_VECTOR(2 DOWNTO 0);
            num3 : in  STD_LOGIC_VECTOR(2 DOWNTO 0);
-           op : in  STD_LOGIC_VECTOR(4 DOWNTO 0);
-           aux : in  STD_LOGIC_VECTOR(7 DOWNTO 0);
+           op : in  operation;
            target_reg : in  STD_LOGIC_VECTOR(4 DOWNTO 0);
 			  is_load : out STD_LOGIC;
+			  ex_operation : out operation;
 			  -- ex_target_reg and data is to ex_mem and id
 			  ex_target_reg : out STD_LOGIC_VECTOR(4 DOWNTO 0);
            data : out INT16;
