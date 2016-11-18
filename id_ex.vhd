@@ -32,12 +32,12 @@ use work.HEADER.ALL;
 
 entity id_ex is
     Port ( id_op : in  STD_LOGIC_VECTOR(4 DOWNTO 0);
-           id_aux : in  STD_LOGIC_VECTOR(4 DOWNTO 0);
+           id_aux : in  STD_LOGIC_VECTOR(7 DOWNTO 0);
            clk : in  STD_LOGIC;
            rst : in  STD_LOGIC;
 			  is_paused : in STD_LOGIC;
            ex_op : out  STD_LOGIC_VECTOR(4 DOWNTO 0);
-           ex_aux : out  STD_LOGIC_VECTOR(4 DOWNTO 0);
+           ex_aux : out  STD_LOGIC_VECTOR(7 DOWNTO 0);
            id_num1 : out  STD_LOGIC_VECTOR(2 DOWNTO 0);
            id_num2 : out  STD_LOGIC_VECTOR(2 DOWNTO 0);
            id_num3 : out  STD_LOGIC_VECTOR(2 DOWNTO 0);

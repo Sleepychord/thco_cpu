@@ -32,7 +32,7 @@ use work.HEADER.ALL;
 
 entity mem_wb is
     Port ( mem_op : in  STD_LOGIC_VECTOR(4 DOWNTO 0);
-           mem_aux : in  STD_LOGIC_VECTOR(4 DOWNTO 0);
+           mem_aux : in  STD_LOGIC_VECTOR(7 DOWNTO 0);
            mem_data : in  INT16;
            mem_target_reg : in  STD_LOGIC_VECTOR(4 DOWNTO 0);
            wb_en : out  STD_LOGIC;

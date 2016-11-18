@@ -38,7 +38,7 @@ entity id is
 			  read_addr2 : out  STD_LOGIC_VECTOR(4 DOWNTO 0);
            read_data2 : in  INT16;
            op : out  STD_LOGIC_VECTOR(4 DOWNTO 0);
-           aux_op : out  STD_LOGIC_VECTOR(4 DOWNTO 0);
+           aux_op : out  STD_LOGIC_VECTOR(7 DOWNTO 0);
            num1 : out  STD_LOGIC_VECTOR(2 DOWNTO 0);
            num2 : out  STD_LOGIC_VECTOR(2 DOWNTO 0);
            num3 : out  STD_LOGIC_VECTOR(2 DOWNTO 0);

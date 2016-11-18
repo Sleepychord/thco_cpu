@@ -18,7 +18,7 @@ package header is
 		type operation is (ADDIU, ADDIU3, ADDSP3, ADDSP, ADDU, AND_OP, B, BEQZ, BNEZ, 
 			BTEQZ, CMP, JALR, JR, JRRA, LI, LW, LW_SP, MFIH, MFPC, MOVE, MTIH, MTSP, NEG, NOP,
 			OR_OP, SLL_OP, SRA_OP, SUBU_OP, SW, SW_SP);
-		function get_op(signal op: in STD_LOGIC_VECTOR(4 DOWNTO 0); signal aux: in STD_LOGIC_VECTOR(4 DOWNTO 0)) return operation;
+		function get_op(signal op: in STD_LOGIC_VECTOR(4 DOWNTO 0); signal aux: in STD_LOGIC_VECTOR(7 DOWNTO 0)) return operation;
 --
 -- Declare constants
 --
@@ -42,10 +42,22 @@ package body header is
 				return "11111111" & num_raw;
 			end if;
 		end function;
-		function get_op(signal op: in STD_LOGIC_VECTOR(4 DOWNTO 0); signal aux: in STD_LOGIC_VECTOR(4 DOWNTO 0)) return operation is
+		function get_op(signal op: in STD_LOGIC_VECTOR(4 DOWNTO 0); signal aux: in STD_LOGIC_VECTOR(7 DOWNTO 0)) return operation is
 		begin
 			case op is
+				when "00000" => return ADDSP3;
+				when "00010" => return B;
+				when "00100" => return BEQZ;
+				when "00101" => return BNQZ;
+				when "01000" => return ADDIU3;
 				when "01001" => return ADDIU;
+				when "01100" => return BTEQZ;
+				when "01100" => return ADDSP;
+				when "11100" => return ADDU;
+				when "11101" => if(aux = "01100")then return AND_OP;
+									 elsif(aux = "01010")then return CMP;
+									 else return NOP;
+									 end if;
 				when others => return NOP;
 			end case;
 		end function;
