@@ -37,6 +37,7 @@ entity sram is
            addr_onlyread : in  INT16;
            data_onlyread : out  INT16;
 			  -- read-write ports is used to load or store
+			  read_write_toggle: in STD_LOGIC_VECTOR(1 DOWNTO 0);
            addr_readwrite : in  INT16;
            data_readwrite : inout  INT16;
            ram1en : out  STD_LOGIC;
