@@ -15,6 +15,10 @@ package header is
 		subtype int16 is STD_LOGIC_VECTOR(15 DOWNTO 0);
 		function sign_extend8(signal num_raw : in STD_LOGIC_VECTOR(7 DOWNTO 0)) return INT16;
 		constant zero : int16 := "0000000000000000";
+		type operation is (ADDIU, ADDIU3, ADDSP3, ADDSP, ADDU, AND_OP, B, BEQZ, BNEZ, 
+			BTEQZ, CMP, JALR, JR, JRRA, LI, LW, LW_SP, MFIH, MFPC, MOVE, MTIH, MTSP, NEG, NOP,
+			OR_OP, SLL_OP, SRA_OP, SUBU_OP, SW, SW_SP);
+		function get_op(signal op: in STD_LOGIC_VECTOR(4 DOWNTO 0); signal aux: in STD_LOGIC_VECTOR(4 DOWNTO 0)) return operation;
 --
 -- Declare constants
 --
@@ -38,6 +42,14 @@ package body header is
 				return "11111111" & num_raw;
 			end if;
 		end function;
+		function get_op(signal op: in STD_LOGIC_VECTOR(4 DOWNTO 0); signal aux: in STD_LOGIC_VECTOR(4 DOWNTO 0)) return operation is
+		begin
+			case op is
+				when "01001" => return ADDIU;
+				when others => return NOP;
+			end case;
+		end function;
+
 ---- Example 1
 --  function <function_name>  (signal <signal_name> : in <type_declaration>  ) return <type_declaration> is
 --    variable <variable_name>     : <type_declaration>;

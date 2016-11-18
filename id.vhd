@@ -33,8 +33,10 @@ use work.HEADER.ALL;
 entity id is
     Port ( id_pc : in  INT16;
            id_instruction : in  INT16;
-           read_addr : out  STD_LOGIC_VECTOR(1 DOWNTO 0);
-           read_data : in  STD_LOGIC_VECTOR(1 DOWNTO 0);
+           read_addr1 : out  STD_LOGIC_VECTOR(4 DOWNTO 0);
+           read_data1 : in  INT16;
+			  read_addr2 : out  STD_LOGIC_VECTOR(4 DOWNTO 0);
+           read_data2 : in  INT16;
            op : out  STD_LOGIC_VECTOR(4 DOWNTO 0);
            aux_op : out  STD_LOGIC_VECTOR(4 DOWNTO 0);
            num1 : out  STD_LOGIC_VECTOR(2 DOWNTO 0);
@@ -58,7 +60,9 @@ end id;
 architecture Behavioral of id is
 
 begin
-
-
+	op <= id_instruction(15 downto 11);
+	aux_op <= 
+	pause_req <= is_ex_load and (ex_target_reg = target_reg);
+	
 end Behavioral;
 

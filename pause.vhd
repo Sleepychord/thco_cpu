@@ -38,7 +38,8 @@ end pause;
 architecture Behavioral of pause is
 
 begin
-
-
+	-- only id can request for pause temporarily
+	pause_res_if_id <= pause_req_id;
+	pause_res_id_ex <= pause_req_id;
 end Behavioral;
 
