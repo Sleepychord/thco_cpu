@@ -31,9 +31,7 @@ use work.HEADER.ALL;
 --use UNISIM.VComponents.all;
 
 entity mem is
-    Port ( sclk : in  STD_LOGIC;
-           rst : in  STD_LOGIC;
-           data : in  INT16;
+    Port ( data : in  INT16;
            target_mem : in  INT16;
            target_reg : in  STD_LOGIC_VECTOR(4 DOWNTO 0);
            op : in  operation;
@@ -49,7 +47,10 @@ end mem;
 architecture Behavioral of mem is
 
 begin
-
-
+	mem_op <= op;
+	mem_data <= data when (op = LI) else "0000000000000000";
+	mem_target_reg <= target_reg when (op = LI) else "00000";
+	sram_addr <= target_mem when (op = SW) else "0000000000000000";
+	sram_data <= data when (op = SW) else "0000000000000000";
 end Behavioral;
 
