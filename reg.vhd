@@ -46,7 +46,12 @@ architecture Behavioral of reg is
 type matrix_type is array (31 downto 0) of INT16;
 signal regs : matrix_type;
 begin
-
+--GeneralReg:00000-00111
+--SP:01000
+--IH:01001
+--RA:01010
+--T:01011	
+	
 -- READ is combinal logic, don't forget to check whether read_addr == write_addr
 -- write is sequetial logic
 	read_data1 <= write_data when (write_en = '1')and(read_addr1 = write_addr) else
