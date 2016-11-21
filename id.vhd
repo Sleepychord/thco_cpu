@@ -110,7 +110,7 @@ begin
 					  "01011" when CMP,
 					  "01010" when JALR,
 					  "01001" when MTIH,
-					  ZERO when others;
+					  "00000" when others;
 	-- JUMP
 	is_data1_zero <= '1' when (read_data1 = ZERO) else '0';
 	with id_op select 
