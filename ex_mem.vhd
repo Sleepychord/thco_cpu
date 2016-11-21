@@ -34,9 +34,9 @@ entity ex_mem is
     Port ( clk : in  STD_LOGIC;
            rst : in  STD_LOGIC;
            ex_op : operation;
-           ex_target_reg : in  INT16;
+           ex_target_reg : in  STD_LOGIC_VECTOR(4 DOWNTO 0);
            ex_data : in  INT16;
-           ex_target_mem : in  STD_LOGIC_VECTOR(4 DOWNTO 0);
+           ex_target_mem : in  INT16 ;
            mem_op : out operation;
            mem_target_reg : out  STD_LOGIC_VECTOR(4 DOWNTO 0);
            mem_data : out  INT16;
