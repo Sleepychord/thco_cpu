@@ -38,6 +38,7 @@ entity sram is
            data_onlyread : out  INT16;
 			  -- read-write ports is used to load or store
 			  read_write_toggle: in STD_LOGIC_VECTOR(1 DOWNTO 0);
+			  -- 00 load 01 store
            addr_readwrite : in  INT16;
            data_readwrite : inout  INT16;
            ram1en : out  STD_LOGIC;
@@ -55,17 +56,98 @@ entity sram is
 		     seri_wrn: out STD_LOGIC := '1';
 			  seri_data_ready	: in std_logic;
 			  seri_tbre	: in std_logic;
-			  seri_tsre	: in std_logic
+			  seri_tsre	: in std_logic;
+			  pause_req : inout std_logic;
+			  clk : in std_logic
 			  );
 end sram;
 
 architecture Behavioral of sram is
-
+signal token : std_logic;
 begin
 	-- should handle serials, ram1, ram2 request
 	-- the situation that visiting two different addr in the same ram might happen,
 	-- maybe we can handle by using super clock to slice the time for this situation
+	-- and pause when loading or storing
 
 	-- don't use both positive and negative edge!
+	process (clk)
+	begin
+		if(clk'event and clk = '1')then 
+			if(pause_req = '1')then
+				token <= '0'; -- can't 
+			else token <= '1';
+			end if;
+		end if;
+	end process;
+	
+	process (sclk, rst)
+	variable state: integer := 0;
+	begin
+		if(rst = '0')then
+			state := 0;
+			ram1en <= '0';
+			ram2en <= '1';
+			seri_rdn <= '1';
+			seri_wrn <= '1';
+			ram1data <= "ZZZZZZZZZZZZZZZZZZ";
+			ram1oe <= '0';
+			pause_req <= '0';
+		elsif(sclk'event and sclk = '0')then -- neg edge
+			case state is
+				when 0 =>
+					-- put instruction addr
+					ram1addr(15 downto 0) <= addr_readonly(15 downto 0);
+               ram1addr(17 downto 16) <= "00";
+					if(token = '1')then -- only when there 's no pause_req in this cpu period, r/w 
+						state := 1;
+					end if;
+				when 1 => 
+					-- read instruction
+               data_readonly <= ram1data;
+					if(read_write_toggle = "10")then
+						state := 0;
+					elsif(read_write_toggle = "00")then
+					-- read memory or serials
+						pause_req <= '1';		-- pause
+						if(addr_readwrite(15 downto 4) = "101111110000")then 
+							-- BF0X seri
+                  else
+							ram1addr(15 downto 0) <= addr_readwrite(15 downto 0);
+							ram1addr(17 downto 16) <= "00";
+							state := 2;
+						end if;
+					elsif(read_write_toggle = "01")then
+						pause_req <= '1';		-- pause
+						if(addr_readwrite(15 downto 4) = "101111110000")then 
+							-- BF0X seri
+                  else
+							ram1oe <= '1';
+							ram1addr(15 downto 0) <= addr_readwrite(15 downto 0);
+							ram1addr(17 downto 16) <= "00";
+							state := 3;
+						end if;
+					end if;
+				when 2 => 
+					-- read memory
+					data_readwrite <= ram1data;
+					pause_req <= '0';
+					state := 0;--end read memory
+				when 3 =>
+					-- write memory
+					ram1we <= '0'; 
+					state := 4;
+				when 4 =>
+					ram1we <= '1';
+					ram1oe <= '0';
+					ram1data <= "ZZZZZZZZZZZZZZZZZZ";
+					pause_req <= '0';
+					state := 0;-- end write memory
+				when others =>
+					state := 0;
+			end case;
+		end if;
+		-- when ending load/store, make sure it is suitable to read memory
+	end process;
 end Behavioral;
 

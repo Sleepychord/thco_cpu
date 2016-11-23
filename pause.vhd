@@ -31,15 +31,22 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity pause is
     Port ( pause_req_id : in  STD_LOGIC;
+			  pause_req_mem : in STD_LOGIC;
            pause_res_if_id : out  STD_LOGIC;
-           pause_res_id_ex : out  STD_LOGIC);
+			  pause_res_ex_mem : out STD_LOGIC;
+			  pause_res_mem_wb : out STD_LOGIC;
+           pause_res_id_ex : out  STD_LOGIC_VECTOR(1 downto 0));
 end pause;
 
 architecture Behavioral of pause is
 
 begin
 	-- only id can request for pause temporarily
-	pause_res_if_id <= pause_req_id;
-	pause_res_id_ex <= pause_req_id;
+	pause_res_if_id <= pause_req_id OR pause_req_mem;
+	pause_res_id_ex <= "10" when pause_req_mem else
+							 "01" when pause_req_id else
+							 "00";
+	pause_res_ex_mem <= pause_req_mem;
+	pause_res_mem_wb <= pause_req_mem;
 end Behavioral;
 

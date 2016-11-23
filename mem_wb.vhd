@@ -38,7 +38,9 @@ entity mem_wb is
 			  clk : in  STD_LOGIC;
            wb_en : out  STD_LOGIC;
            wb_data : out  INT16;
-           wb_target_reg : out  STD_LOGIC_VECTOR(4 DOWNTO 0));
+           wb_target_reg : out  STD_LOGIC_VECTOR(4 DOWNTO 0);
+			  is_paused : in STD_LOGIC
+			  );
 end mem_wb;
 
 architecture Behavioral of mem_wb is
@@ -49,7 +51,7 @@ begin
 			wb_en <= '0';
 			wb_data <= "0000000000000000";
 			wb_target_reg <= "00000";
-		elsif ( clk'event and clk = '1' ) then
+		elsif ( clk'event and clk = '1' and is_paused = '0' ) then
 			wb_data <= mem_data;
 			wb_target_reg <= mem_target_reg;
 			if ((op = B or op = BEQZ or op = BNEZ or op = BTEQZ or 

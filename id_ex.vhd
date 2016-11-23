@@ -34,7 +34,7 @@ entity id_ex is
     Port ( id_op : in  operation;
            clk : in  STD_LOGIC;
            rst : in  STD_LOGIC;
-			  is_paused : in STD_LOGIC;
+			  is_paused : in STD_LOGIC_VECTOR(1 DOWNTO 0);
            ex_op : out  operation;
            id_num1 : in  INT16;
            id_num2 : in  INT16;
@@ -59,8 +59,10 @@ begin
 			ex_num3 <= ZERO;
 			ex_target_reg <= "00000";
 		elsif(clk'event and clk='1')then
-			if(is_paused = '1')then
+			if(is_paused = "01")then
 				ex_op <= NOP;
+			elsif(is_paused = "10")then
+				-- do nothing
 			else
 				ex_num1 <= id_num1;
 				ex_num2 <= id_num2;

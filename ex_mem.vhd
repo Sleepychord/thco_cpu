@@ -40,7 +40,9 @@ entity ex_mem is
            mem_op : out operation;
            mem_target_reg : out  STD_LOGIC_VECTOR(4 DOWNTO 0);
            mem_data : out  INT16;
-           mem_target_mem : out  INT16);
+           mem_target_mem : out  INT16;
+			  is_paused : in STD_LOGIC
+			  );
 end ex_mem;
 
 architecture Behavioral of ex_mem is
@@ -49,7 +51,7 @@ begin
 	begin
 		if (rst = '0') then
 			mem_op <= NOP;
-		elsif ( clk'event and clk = '1' ) then
+		elsif ( clk'event and clk = '1' and is_paused = '0' ) then
 			mem_op <= ex_op;
 			mem_target_reg <= ex_target_reg;
 			mem_data <= ex_data;
