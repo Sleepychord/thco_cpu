@@ -43,8 +43,8 @@ architecture Behavioral of pause is
 begin
 	-- only id can request for pause temporarily
 	pause_res_if_id <= pause_req_id OR pause_req_mem;
-	pause_res_id_ex <= "10" when pause_req_mem else
-							 "01" when pause_req_id else
+	pause_res_id_ex <= "10" when pause_req_mem = '1' else
+							 "01" when pause_req_id = '1' else
 							 "00";
 	pause_res_ex_mem <= pause_req_mem;
 	pause_res_mem_wb <= pause_req_mem;

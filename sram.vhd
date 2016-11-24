@@ -34,8 +34,8 @@ entity sram is
     Port ( rst : in  STD_LOGIC;
            sclk : in  STD_LOGIC;
 			  -- only-read ports is used to get instruction
-           addr_onlyread : in  INT16;
-           data_onlyread : out  INT16;
+           addr_readonly : in  INT16;
+           data_readonly : out  INT16;
 			  -- read-write ports is used to load or store
 			  read_write_toggle: in STD_LOGIC_VECTOR(1 DOWNTO 0);
 			  -- 00 load 01 store
@@ -112,6 +112,9 @@ begin
 						pause_req <= '1';		-- pause
 						if(addr_readwrite(15 downto 4) = "101111110000")then 
 							-- BF0X seri
+							ram1en <= '1';
+							ram1oe <= '1';
+							ram1we <= '1';
                   else
 							ram1addr(15 downto 0) <= addr_readwrite(15 downto 0);
 							ram1addr(17 downto 16) <= "00";
