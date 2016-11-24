@@ -19,6 +19,7 @@
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+USE IEEE.STD_LOGIC_UNSIGNED.ALL;
 use work.HEADER.ALL;
 
 -- Uncomment the following library declaration if using
@@ -92,7 +93,7 @@ begin
 			ram2en <= '1';
 			seri_rdn <= '1';
 			seri_wrn <= '1';
-			ram1data <= "ZZZZZZZZZZZZZZZZZZ";
+			ram1data <= "ZZZZZZZZZZZZZZZZ";
 			ram1oe <= '0';
 			pause_req <= '0';
 		elsif(sclk'event and sclk = '0')then -- neg edge
@@ -165,7 +166,7 @@ begin
 				when 4 =>
 					ram1we <= '1';
 					ram1oe <= '0';
-					ram1data <= "ZZZZZZZZZZZZZZZZZZ";
+					ram1data <= "ZZZZZZZZZZZZZZZZ";
 					pause_req <= '0';
 					state := 0;-- end write memory
 				when 5 =>
