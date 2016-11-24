@@ -84,6 +84,7 @@ begin
 	
 	process (sclk, rst)
 	variable state: integer := 0;
+	variable tmp : INT16;
 	begin
 		if(rst = '0')then
 			state := 0;
@@ -110,9 +111,9 @@ begin
 						state := 0;
 					elsif(read_write_toggle = "00")then
 					-- read memory or serials
-						pause_req <= '1';		-- pause
 						if(addr_readwrite = "1011111100000000")then 
 							-- BF00 
+							pause_req <= '1';		-- pause
 							ram1en <= '1';
 							ram1oe <= '1';
 							ram1we <= '1';
@@ -120,16 +121,30 @@ begin
 							state := 5;
 						elsif(addr_readwrite = "1011111100000001")then 
 							-- BF01
-							
+							tmp := ZERO;
+							if(seri_data_ready = '1')then
+								tmp := tmp + "0000000000000010";
+							end if;
+							if(seri_tbre = '1' and seri_tsre = '1')then
+								tmp := tmp + "0000000000000001";
+							end if;
+							data_readwrite_out <= tmp;
                   else
+							pause_req <= '1';		-- pause
 							ram1addr(15 downto 0) <= addr_readwrite(15 downto 0);
 							ram1addr(17 downto 16) <= "00";
 							state := 2;
 						end if;
 					elsif(read_write_toggle = "01")then
 						pause_req <= '1';		-- pause
-						if(addr_readwrite(15 downto 4) = "101111110000")then 
-							-- BF0X seri
+						if(addr_readwrite(15 downto 0) = "1011111100000000")then 
+							-- BF00 seri
+							ram1en <= '1';
+							ram1oe <= '1';
+							ram1addr(15 downto 0) <= addr_readwrite(15 downto 0);
+							ram1addr(17 downto 16) <= "00";
+							seri_wrn <= '0';
+							state := 6;
                   else
 							ram1oe <= '1';
 							ram1addr(15 downto 0) <= addr_readwrite(15 downto 0);
@@ -162,7 +177,13 @@ begin
 					pause_req <= '0';
 					state := 0;
 				when 6 =>
-					
+					seri_wrn <= '1';
+					state := 7;
+				when 7 =>
+					ram1en <= '0';
+					ram1oe <= '0';
+					pause_req <= '0';
+					state := 0;
 				when others =>
 					state := 0;
 			end case;
