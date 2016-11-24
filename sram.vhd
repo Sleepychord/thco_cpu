@@ -40,7 +40,8 @@ entity sram is
 			  read_write_toggle: in STD_LOGIC_VECTOR(1 DOWNTO 0);
 			  -- 00 load 01 store
            addr_readwrite : in  INT16;
-           data_readwrite : inout  INT16;
+           data_readwrite_in : in  INT16;
+			  data_readwrite_out : out INT16;
            ram1en : out  STD_LOGIC;
            ram1we : out  STD_LOGIC;
            ram1oe : out  STD_LOGIC;
@@ -110,11 +111,16 @@ begin
 					elsif(read_write_toggle = "00")then
 					-- read memory or serials
 						pause_req <= '1';		-- pause
-						if(addr_readwrite(15 downto 4) = "101111110000")then 
-							-- BF0X seri
+						if(addr_readwrite = "1011111100000000")then 
+							-- BF00 
 							ram1en <= '1';
 							ram1oe <= '1';
 							ram1we <= '1';
+							seri_rdn <= '0';
+							state := 5;
+						elsif(addr_readwrite = "1011111100000001")then 
+							-- BF01
+							
                   else
 							ram1addr(15 downto 0) <= addr_readwrite(15 downto 0);
 							ram1addr(17 downto 16) <= "00";
@@ -128,12 +134,13 @@ begin
 							ram1oe <= '1';
 							ram1addr(15 downto 0) <= addr_readwrite(15 downto 0);
 							ram1addr(17 downto 16) <= "00";
+							ram1data <= data_readwrite_in;
 							state := 3;
 						end if;
 					end if;
 				when 2 => 
 					-- read memory
-					data_readwrite <= ram1data;
+					data_readwrite_out <= ram1data;
 					pause_req <= '0';
 					state := 0;--end read memory
 				when 3 =>
@@ -146,6 +153,16 @@ begin
 					ram1data <= "ZZZZZZZZZZZZZZZZZZ";
 					pause_req <= '0';
 					state := 0;-- end write memory
+				when 5 =>
+					data_readwrite_out <= ram1data;
+					ram1en <= '0';
+					ram1oe <= '0';
+					ram1we <= '1';
+					seri_rdn <= '1';					
+					pause_req <= '0';
+					state := 0;
+				when 6 =>
+					
 				when others =>
 					state := 0;
 			end case;
