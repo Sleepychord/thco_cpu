@@ -96,6 +96,8 @@ begin
 			ram1data <= "ZZZZZZZZZZZZZZZZ";
 			ram1oe <= '0';
 			pause_req <= '0';
+			ram1we <= '1';--zouhao jia de
+			ram2we <= '1';--zouhao jia de
 		elsif(sclk'event and sclk = '0')then -- neg edge
 			case state is
 				when 0 =>
