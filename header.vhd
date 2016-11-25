@@ -39,7 +39,7 @@ end header;
 package body header is
 		function sign_extend11(signal num_raw : in STD_LOGIC_VECTOR(10 DOWNTO 0)) return INT16 is
 		begin
-			if(num_raw(7) = '0')then
+			if(num_raw(10) = '0')then
 				return "00000" & num_raw;
 			else
 				return "11111" & num_raw;
@@ -63,7 +63,7 @@ package body header is
 		end function;
 		function sign_extend5(signal num_raw : in STD_LOGIC_VECTOR(4 DOWNTO 0)) return INT16 is
 		begin
-			if(num_raw(3) = '0')then
+			if(num_raw(4) = '0')then
 				return "00000000000" & num_raw;
 			else
 				return "11111111111" & num_raw;
