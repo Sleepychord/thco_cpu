@@ -68,7 +68,7 @@ begin
 	
 	-- NUM1
 	with id_op select
-	read_addr1 <= "00" & id_instruction(10 downto 8) when ADDIU | ADDIU3 | ADDU | AND_OP | BEQZ
+	read_addr1 <= "00" & id_instruction(10 downto 8) when ADDIU | ADDIU3 | ADDU | AND_OP | BEQZ | BNEZ
 							| CMP | JALR | JR | LW | MTIH | MTSP | OR_OP | SUBU | SW,
 					  "00" & id_instruction(7 downto 5) when MOVE | NEG | SLL_OP | SRA_OP,
 					  "01000" when ADDSP3 | ADDSP | LW_SP | SW_SP,

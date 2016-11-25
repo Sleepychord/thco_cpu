@@ -72,4 +72,3 @@ begin
 				  num2 when SW | SW_SP,
 				  ZERO when others;
 end Behavioral;
-
