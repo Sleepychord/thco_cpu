@@ -46,9 +46,7 @@ entity id is
            target_reg : inout STD_LOGIC_VECTOR(4 DOWNTO 0);--OUT
 			  -- foward sideway
 			  ex_target_reg : in STD_LOGIC_VECTOR(4 DOWNTO 0);
-			  ex_target_data : in INT16;
-			  mem_target_reg : in STD_LOGIC_VECTOR(4 DOWNTO 0);
-			  mem_target_data : in INT16;
+
            jump_target : out INT16;
 			  jump_en : out STD_LOGIC;
 			  -- whether operation in exe phase is load
@@ -110,7 +108,7 @@ begin
 					  "01011" when CMP,
 					  "01010" when JALR,
 					  "01001" when MTIH,
-					  "00000" when others;
+					  "10000" when others;
 	-- JUMP
 	is_data1_zero <= '1' when (read_data1 = ZERO) else '0';
 	with id_op select 
