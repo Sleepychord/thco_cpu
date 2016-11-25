@@ -47,13 +47,13 @@ entity top is
            seri_wrn : out  STD_LOGIC;
            seri_dataready : in  STD_LOGIC;
            seri_tbre : in  STD_LOGIC;
-           seri_tsre : in  STD_LOGIC;
-           digits : out  STD_LOGIC_VECTOR(6 DOWNTO 0)-- DIGITAL LIGHTS
+           seri_tsre : in  STD_LOGIC
+           --digits : out  STD_LOGIC_VECTOR(6 DOWNTO 0)-- DIGITAL LIGHTS
 			  );
 end top;
 
 architecture Behavioral of top is
-	component pause is
+	component pause
     Port ( pause_req_id : in  STD_LOGIC;
 			  pause_req_mem : in STD_LOGIC;
            pause_res_if_id : out  STD_LOGIC;
@@ -174,8 +174,8 @@ architecture Behavioral of top is
            write_data : in  INT16;
            clk : in  STD_LOGIC;
            rst : in  STD_LOGIC;
-			  ex_target_data : in INT16;
-			  mem_target_reg : in STD_LOGIC_VECTOR(4 DOWNTO 0);
+ 			  ex_target_data : in INT16;
+ 			  mem_target_reg : in STD_LOGIC_VECTOR(4 DOWNTO 0);
 			  mem_target_data : in INT16);
 	end component;
 	component sram
@@ -215,8 +215,7 @@ signal pause_req_id, pause_req_mem,
 			  pause_res_ex_mem,
 			  pause_res_mem_wb : STD_LOGIC;
 signal pause_res_id_ex : STD_LOGIC_VECTOR(1 downto 0);
-signal id_pc, pc , id_instruction : INT16;
-signal addr, instruction : INT16;
+signal id_pc, pc , id_instruction, instruction : INT16;
 signal jump_en : STD_LOGIC;
 signal jump_target : INT16;
 signal read_addr1, read_addr2 : STD_LOGIC_VECTOR(4 DOWNTO 0);
@@ -247,13 +246,13 @@ begin
 				clk <= '0';
 			end if;
 		end if;
-	end process;
+	end process; 
 
 	u0:pause port map(pause_req_id,pause_req_mem, pause_res_if_id,pause_res_ex_mem,pause_res_mem_wb, pause_res_id_ex);
 	u1:if_id port map(pause_res_if_id, clk, rst, id_pc, id_instruction, pc, instruction, jump_en, jump_target);
 	u2:id port map(id_pc, id_instruction, read_addr1, read_data1, read_addr2, read_data2, id_op, id_num1, id_num2, id_num3, id_target_reg, ex2_target_reg, jump_target, jump_en, is_ex_load, pause_req_id);
 	u3:id_ex port map(id_op, clk, rst, pause_res_id_ex, ex1_op, id_num1, id_num2, id_num3, ex_num1, ex_num2, ex_num3, id_target_reg, ex1_target_reg);
-	u4:ex port map(id_num1, id_num2, id_num3, ex1_op, ex1_target_reg, is_ex_load, ex2_op, ex2_target_reg, ex_data, ex_target_mem);
+	u4:ex port map(ex_num1, ex_num2, ex_num3, ex1_op, ex1_target_reg, is_ex_load, ex2_op, ex2_target_reg, ex_data, ex_target_mem);
 	u5:ex_mem port map(clk, rst, ex2_op, ex2_target_reg, ex_data, ex_target_mem, mem_op, mem1_target_reg, mem1_data, mem_target_mem, pause_res_ex_mem);
 	u6:mem port map(mem1_data, mem_target_mem, mem1_target_reg, mem_op, wb_op, sram_toggle, sram_addr, sram_data_in, sram_data_out, mem2_data, mem2_target_reg);
 	u7:mem_wb port map(wb_op, mem2_data, mem2_target_reg, rst, clk, wb_en, wb_data, wb_target_reg, pause_res_mem_wb);
@@ -263,5 +262,5 @@ begin
 	u9:sram port map(rst, sclk, pc, instruction, sram_toggle, sram_addr, sram_data_out, sram_data_in, ram1en,
 		ram1we, ram1oe, ram1addr, ram1data, ram2en, ram2we, ram2oe, ram2addr, ram2data, seri_rdn,
 		seri_wrn, seri_dataready, seri_tbre, seri_tsre, pause_req_mem, clk);
-	
+	output<=ex_data;
 end Behavioral;
