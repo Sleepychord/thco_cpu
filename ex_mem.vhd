@@ -51,6 +51,9 @@ begin
 	begin
 		if (rst = '0') then
 			mem_op <= NOP;
+			mem_target_reg <= "10000";
+			mem_data <= ZERO;
+			mem_target_mem <= ZERO;			
 		elsif ( clk'event and clk = '1' and is_paused = '0' ) then
 			mem_op <= ex_op;
 			mem_target_reg <= ex_target_reg;

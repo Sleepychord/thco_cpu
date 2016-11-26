@@ -210,7 +210,8 @@ architecture Behavioral of top is
 			  clk : in std_logic
 			  );
 	end component;
-signal clk, sclk : STD_LOGIC;
+signal sclk : STD_LOGIC;
+signal clk : STD_LOGIC := '0';
 signal pause_req_id, pause_req_mem,
            pause_res_if_id,
 			  pause_res_ex_mem,
@@ -232,22 +233,35 @@ signal ex_target_mem, mem_target_mem : INT16;
 signal sram_addr, sram_data_in, sram_data_out : INT16;
 signal sram_toggle: STD_LOGIC_VECTOR(1 DOWNTO 0);
 signal wb_en : STD_LOGIC;
+signal started : STD_LOGIC := '0';
 begin
 	sclk <= clk_raw;
-	process (clk_raw)
-	variable tmp : integer := 0;
+	process (rst, clk_raw)
 	begin
 		-- divide frequency
-		if(clk_raw'event and clk_raw = '1')then
-			if(tmp = 0)then
-				tmp := 1;
-				clk <= '1';
-			else 
-				tmp := 0;
-				clk <= '0';
-			end if;
+		if (rst = '0') then
+			clk <= '0';
+		elsif(clk_raw'event and clk_raw = '1' and started = '1')then
+			clk <= not clk;
 		end if;
 	end process; 
+	
+	
+	process(rst, sclk)
+	variable tmp : integer := 0;
+	begin
+		if(rst = '0')then
+			tmp := 0;
+			started <= '0';
+		elsif(sclk'event and sclk = '0')then
+			if(tmp = 0)then
+				tmp := 1;
+			elsif(tmp = 1)then 
+				tmp := 2;
+				started <= '1';
+			end if;
+		end if;
+	end process;
 
 	u0:pause port map(pause_req_id,pause_req_mem, pause_res_if_id,pause_res_ex_mem,pause_res_mem_wb, pause_res_id_ex);
 	u1:if_id port map(pause_res_if_id, clk, rst, id_pc, id_instruction, pc, instruction, jump_en, jump_target);
@@ -263,5 +277,5 @@ begin
 	u9:sram port map(rst, sclk, pc, instruction, sram_toggle, sram_addr, sram_data_out, sram_data_in, ram1en,
 		ram1we, ram1oe, ram1addr, ram1data, ram2en, ram2we, ram2oe, ram2addr, ram2data, seri_rdn,
 		seri_wrn, seri_dataready, seri_tbre, seri_tsre, pause_req_mem, clk);
-	output<=ex_data;
+	output<=mem1_data;
 end Behavioral;
