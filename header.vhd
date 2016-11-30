@@ -109,7 +109,7 @@ package body header is
 									 elsif(aux = "01000000") then return MFPC;
 									 else return NOP;
 									 end if;
-				when "11110" => if(aux = "01000000")then RETURN MFPC;
+				when "11110" => if(aux = "00000000")then RETURN MFIH;
 									 elsif(aux = "00000001")then return MTIH;
 									 else return NOP;
 									 end if;

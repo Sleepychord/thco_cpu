@@ -92,7 +92,7 @@ begin
 	num2 <= sign_extend8(id_instruction(7 downto 0)) when ADDIU | ADDSP3 | ADDSP | LW_SP, 
 			  sign_extend4(id_instruction(3 downto 0)) when ADDIU3,
 			  sign_extend5(id_instruction(4 downto 0)) when LW,
-			  "0000000000000" + id_instruction(4 downto 2) when SLL_OP | SRA_OP,
+			  "0000000000000" & id_instruction(4 downto 2) when SLL_OP | SRA_OP,
 			  read_data2 when ADDU | AND_OP | CMP | OR_OP | SUBU | SW | SW_SP,
 			  ZERO when others;	
 	-- NUM3

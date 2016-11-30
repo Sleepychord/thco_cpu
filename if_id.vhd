@@ -60,14 +60,15 @@ begin
 			else 
 				new_pc := jump_target;
 			end if;
-			id_pc <= new_pc;
+			id_pc <= pc;
 			pc <= new_pc;
+			id_instruction <= instruction;
 		end if;
 	end process;
 	
 	-- combinational logic of if
 	addr <= pc;
-	id_instruction <= instruction;
+	--id_instruction <= instruction;
 	
 end Behavioral;
 
