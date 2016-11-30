@@ -59,12 +59,12 @@ begin
 	
 -- READ is combinal logic, don't forget to check whether read_addr == write_addr
 -- write is sequetial logic
-	read_data1 <= ex_target_data when (ex_target_data(4) = '0')and(ex_target_reg = read_addr1)else
-			mem_target_data when (mem_target_data(4) = '0')and(mem_target_reg = read_addr1)else
+	read_data1 <= ex_target_data when (ex_target_reg(4) = '0')and(ex_target_reg = read_addr1)else
+			mem_target_data when (mem_target_reg(4) = '0')and(mem_target_reg = read_addr1)else
 			write_data when (write_en = '1')and(read_addr1 = write_addr) else
 			regs(to_integer(unsigned(read_addr1)));
-	read_data2 <= ex_target_data when (ex_target_data(4) = '0')and(ex_target_reg = read_addr2)else
-			mem_target_data when (mem_target_data(4) = '0')and(mem_target_reg = read_addr2)else
+	read_data2 <= ex_target_data when (ex_target_reg(4) = '0')and(ex_target_reg = read_addr2)else
+			mem_target_data when (mem_target_reg(4) = '0')and(mem_target_reg = read_addr2)else
 			write_data when (write_en = '1')and(read_addr2 = write_addr) else
 			regs(to_integer(unsigned(read_addr2)));
 			

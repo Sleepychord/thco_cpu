@@ -65,7 +65,7 @@ entity sram is
 end sram;
 
 architecture Behavioral of sram is
-signal token : std_logic;
+signal token : std_logic := '1';
 begin
 	-- should handle serials, ram1, ram2 request
 	-- the situation that visiting two different addr in the same ram might happen,
@@ -73,15 +73,24 @@ begin
 	-- and pause when loading or storing
 
 	-- don't use both positive and negative edge!
-	process (clk)
+	process (rst, clk)
 	begin
-		if(clk'event and clk = '1')then 
+		if (rst = '0') then
+			token <= '1';
+		elsif(clk'event and clk = '1')then 
 			if(pause_req = '1')then
 				token <= '0'; -- can't 
 			else token <= '1';
 			end if;
 		end if;
 	end process;
+	
+--	process (rst, clk)
+--	begin
+--		if(clk'event and clk = '0' and pause_req = '0')then
+--			data_readonly <= ram1data;
+--		end if;
+--	end process;
 	
 	process (sclk, rst)
 	variable state: integer := 0;
@@ -96,8 +105,8 @@ begin
 			ram1data <= "ZZZZZZZZZZZZZZZZ";
 			ram1oe <= '0';
 			pause_req <= '0';
-			ram1we <= '1';--zouhao jia de
-			ram2we <= '1';--zouhao jia de
+			ram1we <= '1';			
+			ram2we <= '1';
 		elsif(sclk'event and sclk = '0')then -- neg edge
 			case state is
 				when 0 =>
@@ -132,6 +141,7 @@ begin
 								tmp := tmp + "0000000000000001";
 							end if;
 							data_readwrite_out <= tmp;
+							state := 0;
                   else
 							pause_req <= '1';		-- pause
 							ram1addr(15 downto 0) <= addr_readwrite(15 downto 0);
@@ -144,8 +154,10 @@ begin
 							-- BF00 seri
 							ram1en <= '1';
 							ram1oe <= '1';
-							ram1addr(15 downto 0) <= addr_readwrite(15 downto 0);
-							ram1addr(17 downto 16) <= "00";
+							ram1we <= '1';
+							--ram1addr(15 downto 0) <= addr_readwrite(15 downto 0);
+							--ram1addr(17 downto 16) <= "00";
+							ram1data <= data_readwrite_in;
 							seri_wrn <= '0';
 							state := 6;
                   else
@@ -185,6 +197,7 @@ begin
 				when 7 =>
 					ram1en <= '0';
 					ram1oe <= '0';
+					ram1data <= "ZZZZZZZZZZZZZZZZ";
 					pause_req <= '0';
 					state := 0;
 				when others =>
