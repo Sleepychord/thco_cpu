@@ -34,9 +34,9 @@ USE IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity id is
     Port ( id_pc : in  INT16;
            id_instruction : in  INT16;
-           read_addr1 : out  STD_LOGIC_VECTOR(4 DOWNTO 0);
+           read_addr1 : inout  STD_LOGIC_VECTOR(4 DOWNTO 0);
            read_data1 : in  INT16;
-			  read_addr2 : out  STD_LOGIC_VECTOR(4 DOWNTO 0);
+			  read_addr2 : inout  STD_LOGIC_VECTOR(4 DOWNTO 0);
            read_data2 : in  INT16;
            id_op: inout operation; -- OUT
            num1 : out  INT16;
@@ -64,7 +64,7 @@ begin
 	op <= id_instruction(15 downto 11);
 	aux_op <= id_instruction(15 downto 8) when (op = "01100") else id_instruction(7 downto 0);
 	id_op <= get_op(op, aux_op);
-	pause_req <= is_ex_load when(ex_target_reg = target_reg) else '0';
+	pause_req <= is_ex_load when(ex_target_reg = read_addr1 or ex_target_reg = read_addr2) else '0';
 	
 	-- NUM1
 	with id_op select
@@ -75,7 +75,7 @@ begin
 					  "01011" when BTEQZ,
 					  "01010" when JRRA,
 					  "01001" when MFIH,
-					  "00000" when others;
+					  "10000" when others;
 	with id_op select
 	num1 <= read_data1 when  ADDIU | ADDIU3 | ADDSP3 | ADDSP | ADDU | AND_OP | CMP | LW | LW_SP
 							| MFIH | MOVE | MTIH | MTSP | NEG | OR_OP | SLL_OP | SRA_OP | SUBU |SW | SW_SP,
@@ -86,7 +86,7 @@ begin
 	with id_op select
 	read_addr2 <= "00" & id_instruction(7 downto 5) when ADDU | AND_OP | CMP | OR_OP | SUBU | SW,
 					  "00" & id_instruction(10 downto 8) when SW_SP,
-					  "00000" when others;
+					  "10000" when others;
 				  
 	with id_op select
 	num2 <= sign_extend8(id_instruction(7 downto 0)) when ADDIU | ADDSP3 | ADDSP | LW_SP, 
