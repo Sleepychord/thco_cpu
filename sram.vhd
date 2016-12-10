@@ -48,11 +48,6 @@ entity sram is
            ram1oe : out  STD_LOGIC;
            ram1addr : out  STD_LOGIC_VECTOR(17 DOWNTO 0);
            ram1data : inout  INT16;
-           ram2en : out  STD_LOGIC;
-           ram2we : out  STD_LOGIC;
-           ram2oe : out  STD_LOGIC;
-           ram2addr : out  STD_LOGIC_VECTOR(17 DOWNTO 0);
-           ram2data : inout  INT16;
 			  -- Serials, maybe need to be modified
 			  seri_rdn: out STD_LOGIC := '1';
 		     seri_wrn: out STD_LOGIC := '1';
@@ -60,7 +55,9 @@ entity sram is
 			  seri_tbre	: in std_logic;
 			  seri_tsre	: in std_logic;
 			  pause_req : inout std_logic;
-			  clk : in std_logic
+			  clk : in std_logic;
+			  cam_addr : out std_logic_vector(9 downto 0);
+			  cam_data : in std_logic
 			  );
 end sram;
 
@@ -99,14 +96,12 @@ begin
 		if(rst = '0')then
 			state := 0;
 			ram1en <= '0';
-			ram2en <= '1';
 			seri_rdn <= '1';
 			seri_wrn <= '1';
 			ram1data <= "ZZZZZZZZZZZZZZZZ";
 			ram1oe <= '0';
 			pause_req <= '0';
 			ram1we <= '1';			
-			ram2we <= '1';
 		elsif(sclk'event and sclk = '0')then -- neg edge
 			case state is
 				when 0 =>
@@ -142,6 +137,11 @@ begin
 							end if;
 							data_readwrite_out <= tmp;
 							state := 0;
+						elsif(addr_readwrite(15 downto 10) = "111111")then
+							-- camera
+							cam_addr <= addr_readwrite(9 downto 0);
+							pause_req <= '1';
+							state := 8;
                   else
 							pause_req <= '1';		-- pause
 							ram1addr(15 downto 0) <= addr_readwrite(15 downto 0);
@@ -198,6 +198,10 @@ begin
 					ram1en <= '0';
 					ram1oe <= '0';
 					ram1data <= "ZZZZZZZZZZZZZZZZ";
+					pause_req <= '0';
+					state := 0;
+				when 8 =>
+					data_readwrite_out <= "000000000000000" & cam_data;
 					pause_req <= '0';
 					state := 0;
 				when others =>

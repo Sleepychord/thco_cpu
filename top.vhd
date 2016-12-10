@@ -32,23 +32,36 @@ use work.HEADER.ALL;
 entity top is
     Port ( clk_raw : in  STD_LOGIC;
            rst : in  STD_LOGIC;
-           output : out  INT16;--LED LIGHT
            ram1addr : out  STD_LOGIC_VECTOR(17 DOWNTO 0);
            ram1data : inout  INT16;
            ram1en : out  STD_LOGIC;
            ram1oe : out  STD_LOGIC;
            ram1we : out  STD_LOGIC;
-           ram2addr : out  STD_LOGIC_VECTOR(17 DOWNTO 0);
-           ram2data : inout  INT16;
-           ram2en : out  STD_LOGIC;
-           ram2oe : out  STD_LOGIC;
-           ram2we : out  STD_LOGIC;
            seri_rdn : out  STD_LOGIC;
            seri_wrn : out  STD_LOGIC;
            seri_dataready : in  STD_LOGIC;
            seri_tbre : in  STD_LOGIC;
-           seri_tsre : in  STD_LOGIC
+           seri_tsre : in  STD_LOGIC;
+			  Reste : out  STD_LOGIC;
+			  pwdn : out STD_LOGIC;
+			  tocamclk : out  STD_LOGIC;
+			  switch : in STD_LOGIC;
+			  camclk : in  STD_LOGIC;
+			  vsync : in STD_LOGIC;
+			  href : in STD_LOGIC;
+			  din : in STD_LOGIC_VECTOR (7 downto 0);
+           r : out  STD_LOGIC_VECTOR (2 downto 0);
+           g : out  STD_LOGIC_VECTOR (2 downto 0);
+           b : out  STD_LOGIC_VECTOR (2 downto 0);
+           hs : out  STD_LOGIC;
+			  Oe : out STD_LOGIC;
+			  En : out STD_LOGIC;
+			  We : out STD_LOGIC;
            --digits : out  STD_LOGIC_VECTOR(6 DOWNTO 0)-- DIGITAL LIGHTS
+			  Addr : out  STD_LOGIC_VECTOR (17 downto 0);
+			  Data : inout STD_LOGIC_VECTOR (15 downto 0);
+           vs : out  STD_LOGIC;
+			  swrst : in std_logic
 			  );
 end top;
 
@@ -195,11 +208,6 @@ architecture Behavioral of top is
            ram1oe : out  STD_LOGIC;
            ram1addr : out  STD_LOGIC_VECTOR(17 DOWNTO 0);
            ram1data : inout  INT16;
-           ram2en : out  STD_LOGIC;
-           ram2we : out  STD_LOGIC;
-           ram2oe : out  STD_LOGIC;
-           ram2addr : out  STD_LOGIC_VECTOR(17 DOWNTO 0);
-           ram2data : inout  INT16;
 			  -- Serials, maybe need to be modified
 			  seri_rdn: out STD_LOGIC := '1';
 		     seri_wrn: out STD_LOGIC := '1';
@@ -207,9 +215,56 @@ architecture Behavioral of top is
 			  seri_tbre	: in std_logic;
 			  seri_tsre	: in std_logic;
 			  pause_req : inout std_logic;
-			  clk : in std_logic
+			  clk : in std_logic;			  
+			  cam_addr : out std_logic_vector(9 downto 0);
+			  cam_data : in std_logic
 			  );
 	end component;
+	component cam2ram
+		Port ( addr : in  STD_LOGIC_VECTOR (17 downto 0);
+           requestaddr : in STD_LOGIC_VECTOR (17 downto 0);
+			  mnistdata : out std_logic;
+           mnistaddr : in STD_LOGIC_VECTOR (9 downto 0);
+           d : in  STD_LOGIC_VECTOR (7 downto 0);
+			  en : in STD_LOGIC;
+			  pclk : in STD_LOGIC;
+			  rst : in STD_LOGIC;
+			  switch : in STD_LOGIC;
+			  pixready : in STD_LOGIC;
+			  outr : out STD_LOGIC_VECTOR (2 downto 0);
+			  outg : out STD_LOGIC_VECTOR (2 downto 0);
+			  outb : out STD_LOGIC_VECTOR (2 downto 0);
+           ram2Oe : out  STD_LOGIC;
+           ram2En : out  STD_LOGIC;
+           ram2We : out  STD_LOGIC;
+           ram2Addr : out  STD_LOGIC_VECTOR (17 downto 0);
+           ram2Data : inout  STD_LOGIC_VECTOR (15 downto 0)
+			  );
+	end component;
+	component getcam
+		    Port ( fromcamclk : in STD_LOGIC;
+           vsync : in  STD_LOGIC;
+           href : in  STD_LOGIC;
+           d : in  STD_LOGIC_VECTOR (7 downto 0);
+			  addr : out STD_LOGIC_VECTOR (17 downto 0);
+			  dout : out  STD_LOGIC_VECTOR (7 downto 0);
+			  en : out STD_LOGIC;
+			  ready : out STD_LOGIC);
+	end component;
+	component ram2vga
+		Port ( rst : in  STD_LOGIC;
+			  clk : in  STD_LOGIC;
+           vs : out  STD_LOGIC;
+           hs : out  STD_LOGIC;
+			  requestaddr : out  STD_LOGIC_VECTOR (17 downto 0);
+			  getr : in  STD_LOGIC_VECTOR (2 downto 0);
+           getg : in  STD_LOGIC_VECTOR (2 downto 0);
+           getb : in  STD_LOGIC_VECTOR (2 downto 0);
+           r : out  STD_LOGIC_VECTOR (2 downto 0);
+           g : out  STD_LOGIC_VECTOR (2 downto 0);
+           b : out  STD_LOGIC_VECTOR (2 downto 0));
+	end component;
+
 signal sclk : STD_LOGIC;
 signal clk : STD_LOGIC := '0';
 signal pause_req_id, pause_req_mem,
@@ -234,14 +289,32 @@ signal sram_addr, sram_data_in, sram_data_out : INT16;
 signal sram_toggle: STD_LOGIC_VECTOR(1 DOWNTO 0);
 signal wb_en : STD_LOGIC;
 signal started : STD_LOGIC := '0';
+signal readyWire: std_logic;
+signal readAddrWire, addrWire: std_logic_vector (17 downto 0);
+signal dwire: std_logic_vector (7 downto 0);
+signal rWire, gWire, bWire: std_logic_vector (2 downto 0);
+signal mnistData : std_logic;
+signal camen : std_logic;
+signal mnistAddr : STD_LOGIC_VECTOR (9 downto 0);
+signal swrstfinal : std_logic;
 begin
 	sclk <= clk_raw;
-	process (rst, clk_raw)
+	
+--	process(rst, clk_raw)
+--	begin
+--		if (rst = '0') then
+--			sclk <= '0';
+--		elsif (clk_raw'event and clk_raw = '1') then
+--			sclk <= not sclk;
+--		end if;
+--	end process;
+--	
+	process (rst, sclk)
 	begin
 		-- divide frequency
 		if (rst = '0') then
 			clk <= '0';
-		elsif(clk_raw'event and clk_raw = '1' and started = '1')then
+		elsif(sclk'event and sclk = '1' and started = '1')then
 			clk <= not clk;
 		end if;
 	end process; 
@@ -262,6 +335,7 @@ begin
 			end if;
 		end if;
 	end process;
+	swrstfinal <= swrst and rst;
 
 	u0:pause port map(pause_req_id,pause_req_mem, pause_res_if_id,pause_res_ex_mem,pause_res_mem_wb, pause_res_id_ex);
 	u1:if_id port map(pause_res_if_id, clk, rst, id_pc, id_instruction, pc, instruction, jump_en, jump_target);
@@ -275,7 +349,13 @@ begin
 	
 	
 	u9:sram port map(rst, sclk, pc, instruction, sram_toggle, sram_addr, sram_data_out, sram_data_in, ram1en,
-		ram1we, ram1oe, ram1addr, ram1data, ram2en, ram2we, ram2oe, ram2addr, ram2data, seri_rdn,
-		seri_wrn, seri_dataready, seri_tbre, seri_tsre, pause_req_mem, clk);
-	output<=mem1_data;
+		ram1we, ram1oe, ram1addr, ram1data, seri_rdn,
+		seri_wrn, seri_dataready, seri_tbre, seri_tsre, pause_req_mem, clk, mnistAddr, mnistData);
+		
+	u10: getcam Port map(fromcamclk=>camclk, en => camen, vsync=>vsync, href=>href, d=>din, addr=>addrWire, dout=>dwire, ready=>readyWire);
+	u11: cam2ram Port map(addr=>addrWire, requestaddr=>readAddrWire, mnistData=>mnistData, mnistAddr=>mnistAddr, d=>dwire, en=>camen, pclk=>camclk, rst=>swrstfinal, switch=>switch, pixready=>readyWire, outr=>rWire, outg=>gWIre, outb=>bWire, ram2Oe=>Oe, ram2En=>En, ram2We=>We, ram2Addr=>Addr, ram2Data=>Data);
+	u12: ram2vga Port map(rst=>swrstfinal, clk=>clk, vs=>vs, hs=>hs, requestaddr=>readAddrWire, getr=>rWire, getg=>gWire, getb=>bWire, r=>r, g=>g, b=>b);
+	Reste <= '1';
+	pwdn <= '0';
+	tocamclk <= clk;
 end Behavioral;

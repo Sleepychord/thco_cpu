@@ -61,6 +61,10 @@ begin
 		elsif(clk'event and clk='1')then
 			if(is_paused = "01")then
 				ex_op <= NOP;
+				ex_num1 <= ZERO;
+				ex_num2 <= ZERO;
+				ex_num3 <= ZERO;
+				ex_target_reg <= "10000";
 			elsif(is_paused = "10")then
 				-- do nothing
 			else
